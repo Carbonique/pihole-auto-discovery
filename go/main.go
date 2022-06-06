@@ -19,7 +19,9 @@ func main(){
 	containers := getContainers()
 
 	for _, container := range containers {
+		fmt.Printf("Found container with name: %s\n", container.Names)
 		hasPiholeLabels, containerLabels := getContainerLabels(container)
+
 		if (hasPiholeLabels) {
 			domain := containerLabels
 			domains = append(domains, domain)
@@ -33,23 +35,19 @@ func main(){
 func writeFile(filename string, domains []Domain){
 // this does not write to the file, but only to the temp file currently
 	f, err := os.CreateTemp("./", "example")
+	if err != nil {
+		panic(err)
+	}
+	defer os.Remove(f.Name()) // defer clean up
+
+	for _, domain := range domains {
+
+		f.WriteString(domain.IP + " " + domain.Name + "\n")
+
 		if err != nil {
-			panic(err)
-		}
-		//defer os.Remove(f.Name()) // defer clean up
-
-		for _, domain := range domains {
-
-			f.WriteString(domain.IP + " " + domain.Name + "\n")
-
-			if err != nil {
-		    panic(err)
-		  }
-
-		}
-
-
-
+	    panic(err)
+	  }
+	}
 }
 
 func getContainers() []types.Container {
