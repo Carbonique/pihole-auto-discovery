@@ -6,6 +6,8 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"os"
+	"strings"
+	"sort"
 )
 
 type Domain struct {
@@ -14,22 +16,41 @@ type Domain struct {
 	}
 
 func main(){
-	var domains []Domain
 
 	containers := getContainers()
 
+	domains := getPiholeDomains(containers)
+
+	sort.SliceStable(domains, func(i, j int) bool {
+		return domains[i].Name < domains[j].Name
+	})
+
+	fmt.Println("after sorting")
+	for _, domain := range domains{
+		fmt.Println(domain.Name)
+	}
+
+
+	//fmt.Printf("%t", h == h2)
+	//writeFile("./dit nog aanpassen.txt", domains)
+
+}
+
+func getPiholeDomains(containers []types.Container) []Domain {
+	var domains []Domain
+
 	for _, container := range containers {
-		fmt.Printf("Found container with name: %s\n", container.Names)
-		hasPiholeLabels, containerLabels := getContainerLabels(container)
+		fmt.Println("---")
+		fmt.Println("Found container with name:", strings.Trim(fmt.Sprint(container.Names), "/[]"))
+
+		hasPiholeLabels, piholeLabels := getPiholeLabels(container)
 
 		if (hasPiholeLabels) {
-			domain := containerLabels
+			domain := piholeLabels
 			domains = append(domains, domain)
 		}
 	}
-
-	writeFile("./dit nog aanpassen.txt", domains)
-
+	return domains
 }
 
 func writeFile(filename string, domains []Domain){
@@ -64,7 +85,7 @@ func getContainers() []types.Container {
   return containers
 }
 
-func getContainerLabels(container types.Container) (bool, Domain) {
+func getPiholeLabels(container types.Container) (bool, Domain) {
 	domain := Domain{}
 
 		for key, value := range container.Labels{
