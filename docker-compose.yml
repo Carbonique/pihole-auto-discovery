@@ -1,0 +1,9 @@
+version: "3.5"
+
+services:
+
+  nginx:
+    image: nginx
+    labels:
+      pihole.domain.ip: "192.168.10.7"
+      pihole.domain.name: "test"

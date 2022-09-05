@@ -1,2 +1,0 @@
-192.168.10.7 test11.ritmeester.xyz
-192.168.10.7 test.ritmeester.xyz
