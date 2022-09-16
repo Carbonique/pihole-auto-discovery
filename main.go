@@ -61,7 +61,7 @@ func getPiholeLabels(containers []types.Container) (Domains, error) {
 
 		// If app is empty, we do not append
 		if domain == (Domain{}) {
-			log.Println("Container has no sui labels")
+			log.Println("Container has no pihole labels")
 			continue
 		}
 		domains = append(domains, domain)
